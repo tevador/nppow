@@ -19,6 +19,7 @@ along with nppow.  If not, see<http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 

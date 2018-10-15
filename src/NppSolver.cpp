@@ -18,7 +18,7 @@ along with nppow.  If not, see<http://www.gnu.org/licenses/>.
 */
 
 #include "NppSolver.h"
-#include <exception>
+#include <stdexcept>
 #include <algorithm>
 
 void sortLastElement(std::vector<NppNode*>& list) {
@@ -108,7 +108,7 @@ bool NppSolver::verifySolution(uint128_t& solution) {
 
 int NppSolver::solve(byte * input, size_t inputSize, uint128_t * solutions, size_t maxSolutions, size_t maxNodes, bool fullProbe) {
 	if (inputSize < N * B / 8) {
-		throw std::exception("Invalid input size");
+		throw std::runtime_error("Invalid input size");
 	}
 
 	nodes.clear();
