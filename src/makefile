@@ -1,5 +1,5 @@
 CXXFLAGS=-Wall -std=c++0x -march=native -O3
-EXECUTABLE=npp
+EXECUTABLE=nppow
 LDFLAGS=
 OBJ=keccak-tiny.o NppSolver.o demo.o
 

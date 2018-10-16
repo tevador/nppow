@@ -22,7 +22,7 @@ The essence of the KK and CDA algorithms is finding the two largest elements. Fa
 
 The best property of the NPP in relation to PoW is that a perfect partition can be very easily verified by simply calculating the sums. On the other hand, finding the perfect partition is a hard problem.
 
-The variant of NPP presented here uses a list of 128 randomly generated 42-bit numbers with the goal of finding the perfect partition. With B = 42 and N = 128, we can calculate that there are on average ≈2<sup>83</sup> perfect partitions out of the 2<sup>128</sup> possible ones. These parameters were chosen specifically so that a modified CDA algorithm can find approximately 1 perfect partition per second on a modern CPU.
+The Number partitioning proof of work (NPPoW) presented here uses a list of 128 randomly generated 42-bit numbers with the goal of finding the perfect partition. With B = 42 and N = 128, we can calculate that there are on average ≈2<sup>83</sup> perfect partitions out of the 2<sup>128</sup> possible ones. These parameters were chosen specifically so that a modified CDA algorithm can find approximately 1 perfect partition per second on a modern CPU (using 1 thread).
 
 The list of numbers is generated at random by hashing the current block header using the SHAKE-256 hashing function, which is a NIST-approved [variant of SHA-3](https://en.wikipedia.org/wiki/SHA-3#Instances) with a variable output length. In this case, the selected output length is 5376 bits (128 × 42).
 
@@ -30,21 +30,23 @@ Once a perfect partition is found, it is encoded as a 128-bit number, where each
 
 The encoded solution is then appended to the block header and the whole header is hashed once again, this time using the SHA3-256 hash function to determine the final PoW.
 
+Since the solution must be included in the block, its small size (16 bytes) is another advantage of NPPoW. Existing asymmetric PoW algorithms have significantly larger solutions - 1344 bytes for Equihash and 168 bytes for Cuckoo cycle.
+
 ### ASIC friendliness
 
-As the whole PoW has a very simple definition and a limited set of operations, it can be easily implemented in hardware. A minimal hardware miner needs only an efficient sorting algorithm and some trivial logic consisting of integer addition, subtraction and comparison.
+As the whole algorithm has a very simple definition and a limited set of operations, it can be easily implemented in hardware. A minimal hardware miner needs only an efficient sorting algorithm, integer addition and subtraction and some simple logic to encode the solution. Hashing can be done entirely in software with low impact on performance.
 
-It can be argued that *nppow* can result in a more egalitarian ASIC development than e.g. pure SHA-256 or SHA-3 PoW. This is because over 99% of the performance is determined by the sorting algorithm. Hardware sorting has been extensively studied and the techniques are well established, unlike the relatively complex hashing algorithms, where the R&D cost to compete with existing products can be substantial.
+It can be argued that NPPoW can result in a more egalitarian ASIC development than e.g. pure SHA-256 or SHA-3 PoW. This is because the majority of the performance is determined by the sorting algorithm. Hardware sorting engines have been extensively studied and the techniques are well established, unlike the relatively complex hashing algorithms, where the R&D cost to compete with existing products can be substantial.
 
 ## Concept code
 
 Compile the code and run as:
 ```
-npp noncesCount [maxNodes=16] [fullProbe=1] [startingNonce]
+nppow noncesCount [maxNodes] [fullProbe] [startingNonce]
 ```
-* **noncesCount** - The number of nonces to be tested (required parameter, 100000 is a good number)
-- **maxNodes** - The number of leaves of the binary tree to be probed for each nonce. For maxNodes=1, this is reduced to the KK algorithm (i.e. only the subtraction branches are taken). Default is 16.
-* **fullProbe** - If set to 0, maximum of one solution per nonce will be found. Default value is fullProbe=1, i.e. the probing continues until *maxNodes* are visited.
+* **noncesCount** - The number of nonces to be tested. It is a required parameter (100000 is a good number).
+- **maxNodes** - The number of leaves of the binary tree to be probed for each nonce. When set to 1, mining is reduced to the KK algorithm (i.e. only the subtraction branches are taken). Default is 16.
+* **fullProbe** - If set to 0, maximum of one solution per nonce will be found. Default value is 1, i.e. the probing continues until *maxNodes* are visited.
 * **startingNonce** - the starting nonce. Default is a pseudorandom value.
 
 ### References
