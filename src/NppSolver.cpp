@@ -24,63 +24,49 @@ along with nppow.  If not, see<http://www.gnu.org/licenses/>.
 void sortLastElement(std::vector<NppNode*>& list) {
 	//single iteration of insertion sort - O(N)
 	auto last = list.back();
-	size_t i = list.size() - 1;
-	for (; i > 0; --i) {
-		if (list[i - 1]->getValue() > last->getValue()) {
-			list[i] = list[i - 1];
+	auto it = list.end() - 1;
+	for (; it > list.begin(); --it) {
+		if (it[-1]->getValue() > last->getValue()) {
+			it[0] = it[-1];
 		}
-		else {
-			break;
-		}
+		else break;
 	}
-	list[i] = last;
+	it[0] = last;
 }
 
-uint64_t NppSolver::getDifference(bitstack_t treeNode, uint128_t & solution) {
-	tree.clear();
+void NppSolver::resetWorkingSet() {
+	workingSet.clear();
 	nodes.erase(nodes.begin() + N, nodes.end());
 	for (auto i = nodes.begin(); i != nodes.end(); ++i) {
-		tree.push_back(&(*i));
+		workingSet.push_back(&(*i));
 	}
-	bool isSorted = true;
-
-	while (treeNode != 0) { //pre KK
-		if (!isSorted) {
-			sortLastElement(tree);
-			isSorted = true;
-		}
-		auto a = tree[tree.size() - 1];
-		auto b = tree[tree.size() - 2];
-		tree.pop_back();
-
-		auto add = (treeNode & 1UL) != 0;
-		treeNode >>= 1; //pop
-
-		if (add) {
-			nodes.push_back(NppNode(a, b, TreeOperation::Addition));
-			tree[tree.size() - 1] = &nodes.back();
-		}
-		else
-		{
-			nodes.push_back(NppNode(a, b, TreeOperation::Subtraction));
-			tree[tree.size() - 1] = &nodes.back();
-			isSorted = false;
-		}
-	}
-	return getDifferenceKK(solution); //KK
+	isSorted = true;
 }
 
-uint64_t NppSolver::getDifferenceKK(uint128_t & solution) {
-	while (tree.size() > 1) {
-		sortLastElement(tree);
-		auto a = tree[tree.size() - 1];
-		auto b = tree[tree.size() - 2];
-		tree.pop_back();
-		nodes.push_back(NppNode(a, b, TreeOperation::Subtraction));
-		tree[tree.size() - 1] = &nodes.back();
+uint64_t NppSolver::getDifference(bitstack_t treePath) {
+	while (treePath != 0) { //pre KK
+		if (!isSorted) {
+			sortLastElement(workingSet);
+			isSorted = true;
+		}
+		auto a = workingSet.end()[-1];
+		auto b = workingSet.end()[-2];
+		workingSet.pop_back();
+		auto add = (treePath & 1UL) != 0;
+		treePath >>= 1; //pop
+		nodes.push_back(NppNode(a, b, (TreeOperation)add));
+		workingSet.end()[-1] = &nodes.back();
+		isSorted = add;
 	}
-	uint64_t diff = tree[0]->getValue();
-	solution.fromTree(tree[0]);
+	while (workingSet.size() > 1) { //KK
+		sortLastElement(workingSet);
+		auto a = workingSet.end()[-1];
+		auto b = workingSet.end()[-2];
+		workingSet.pop_back();
+		nodes.push_back(NppNode(a, b, TreeOperation::Subtraction));
+		workingSet.end()[-1] = &nodes.back();
+	}
+	uint64_t diff = workingSet[0]->getValue();
 	return diff;
 }
 
@@ -106,7 +92,7 @@ bool NppSolver::verifySolution(uint128_t& solution) {
 	return (diff + 1) <= 2;
 }
 
-int NppSolver::solve(byte * input, size_t inputSize, uint128_t * solutions, size_t maxSolutions, size_t maxNodes, bool fullProbe) {
+int NppSolver::solve(byte * input, size_t inputSize, uint128_t * solutions, size_t maxSolutions, size_t maxLeaves, bool fullProbe) {
 	if (inputSize < N * B / 8) {
 		throw std::runtime_error("Invalid input size");
 	}
@@ -132,14 +118,15 @@ int NppSolver::solve(byte * input, size_t inputSize, uint128_t * solutions, size
 		return a.getValue() < b.getValue();
 	});
 
-	bitstack_t treeNode = 0;
+	bitstack_t treePath = 0;
 	int solutionsCount = 0;
 
-	while (treeNode < maxNodes && solutionsCount  < maxSolutions) {
-		uint128_t solution;
-		uint64_t diff = getDifference(treeNode, solution);
-
+	while (treePath < maxLeaves && solutionsCount < maxSolutions) {
+		resetWorkingSet();
+		uint64_t diff = getDifference(treePath);
 		if (diff == 0 || diff == 1)	{
+			uint128_t solution;
+			solution.fromTree(workingSet[0]);
 			if ((solution.lo & 1) == 0)	{
 				solution.lo = ~solution.lo;
 				solution.hi = ~solution.hi;
@@ -149,7 +136,7 @@ int NppSolver::solve(byte * input, size_t inputSize, uint128_t * solutions, size
 			if (!fullProbe)
 				break;
 		}
-		treeNode++;
+		treePath++;
 	}
 
 	return solutionsCount;

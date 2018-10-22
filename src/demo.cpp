@@ -71,12 +71,12 @@ int main(int argc, char** argv) {
 	constexpr int blockTemplateBaseSize = 76;
 
 	uint32_t noncesCount;
-	size_t maxNodes = 16;
+	size_t maxLeaves = 16;
 	uint32_t startingNonce = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 	bool fullProbe = true;
 
 	if (argc < 2) {
-		std::cout << "Usage: " << std::endl << argv[0] << " noncesCount [maxNodes=16] [fullProbe=1] [startingNonce]" << std::endl;
+		std::cout << "Usage: " << std::endl << argv[0] << " noncesCount [maxLeaves(16)] [fullProbe(1)] [startingNonce]" << std::endl;
 		return 0;
 	}
 
@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
 	}
 
 	if (argc >= 3) {
-		if (!tryParse(argv[2], maxNodes)) {
+		if (!tryParse(argv[2], maxLeaves)) {
 			return 1;
 		}
 	}
@@ -102,7 +102,7 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	std::cout << "Running nonces " << startingNonce << " - " << startingNonce + noncesCount - 1 <<  ", nodes per nonce: " << maxNodes << (fullProbe ? "" : " (stopping at first solution)") << std::endl;
+	std::cout << "Running nonces " << startingNonce << " - " << startingNonce + noncesCount - 1 <<  ", leaves per nonce: " << maxLeaves << (fullProbe ? "" : " (stopping at first solution)") << std::endl;
 
 	byte blockTemplate[sizeof(blockTemplateHex) / 2];
 
@@ -122,7 +122,7 @@ int main(int argc, char** argv) {
 	for (uint32_t nonce = startingNonce; nonce < startingNonce + noncesCount; ++nonce) {
 		*noncePtr = nonce;
 		shake256(numbersBuffer, sizeof(numbersBuffer), blockTemplate, blockTemplateBaseSize);
-		int solutionsCount = solver.solve(numbersBuffer, sizeof(numbersBuffer), solutions, sizeof(solutions) / sizeof(uint128_t), maxNodes, fullProbe);
+		int solutionsCount = solver.solve(numbersBuffer, sizeof(numbersBuffer), solutions, sizeof(solutions) / sizeof(uint128_t), maxLeaves, fullProbe);
 		for (int sol = 0; sol < solutionsCount; ++sol) {
 			auto solution = solutions[sol];
 			*nppSolutionPtr = solution;

@@ -10,7 +10,7 @@ One interesting property of the NPP is the randomness of the cost function. Loos
 
 ### Heuristics
 
-This inherent "randomness" of NPP partially explains the lack of good heuristics (unlike other NP-hard problems). Although the problem has been studied for decades, the best heuristic to date is the Karmarkar and Karp (KK) algorithm. This algorithm runs in polynomial time and in each step, the two biggest numbers in the list are replaced by their difference (this is equivalent to placing each of the two elements in opposite subsets). At the end, just one number remains, which represents the final difference of sums of the two subsets.
+This inherent "randomness" of NPP partially explains the lack of good heuristics (unlike other NP-hard problems). Although the problem has been studied for decades, the best polynomial time heuristic to date is the Karmarkar and Karp (KK) algorithm. This algorithm progressively replaces the two biggest numbers in the list by their difference (this is equivalent to placing each of the two elements in opposite subsets). At the end, just one number remains, which represents the final difference of sums of the two subsets.
 
 The quality of the solution provided by the KK algorithm depends on the value of q. For very small values of q, KK always gives the perfect partition. For larger values of q, the result is almost always suboptimal.
 
@@ -42,11 +42,11 @@ It can be argued that NPPoW can result in a more egalitarian ASIC development th
 
 Compile the code and run as:
 ```
-nppow noncesCount [maxNodes] [fullProbe] [startingNonce]
+nppow noncesCount [maxLeaves(16)] [fullProbe(1)] [startingNonce]
 ```
 * **noncesCount** - The number of nonces to be tested. It is a required parameter (100000 is a good number).
-- **maxNodes** - The number of leaves of the binary tree to be probed for each nonce. When set to 1, mining is reduced to the KK algorithm (i.e. only the subtraction branches are taken). Default is 16.
-* **fullProbe** - If set to 0, maximum of one solution per nonce will be found. Default value is 1, i.e. the probing continues until *maxNodes* are visited.
+- **maxLeaves** - The number of leaves of the binary tree to be probed for each nonce. When set to 1, mining is reduced to the KK algorithm (i.e. only the subtraction branches are taken). Default is 16.
+* **fullProbe** - If set to 0, maximum of one solution per nonce will be found. Default value is 1, i.e. the probing continues until *maxLeaves* are visited.
 * **startingNonce** - the starting nonce. Default is a pseudorandom value.
 
 ### References

@@ -87,13 +87,14 @@ class NppSolver {
 private:
 	uint64_t numbers[N];
 	std::vector<NppNode> nodes;
-	std::vector<NppNode*> tree;
-	uint64_t getDifference(bitstack_t treeNode, uint128_t& solution);
-	uint64_t getDifferenceKK(uint128_t& solution);
+	std::vector<NppNode*> workingSet;
+	bool isSorted;
+	void resetWorkingSet();
+	uint64_t getDifference(bitstack_t treeNode);
 public:
 	NppSolver() {
 		nodes.reserve(2 * N);
-		tree.reserve(N);
+		workingSet.reserve(N);
 	}
 	int solve(byte* input, size_t inputSize, uint128_t* solutions, size_t maxSolutions, size_t maxNodes, bool fullProbe);
 	bool verifySolution(uint128_t& solution);
