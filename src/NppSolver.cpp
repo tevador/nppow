@@ -23,8 +23,8 @@ along with nppow.  If not, see<http://www.gnu.org/licenses/>.
 
 void sortLastElement(std::vector<NppNode*>& list) {
 	//single iteration of insertion sort - O(N)
-	auto last = list.back();
 	auto it = list.end() - 1;
+	auto last = it[0];
 	for (; it > list.begin(); --it) {
 		if (it[-1]->getValue() > last->getValue()) {
 			it[0] = it[-1];
@@ -71,25 +71,33 @@ uint64_t NppSolver::getDifference(bitstack_t treePath) {
 }
 
 bool NppSolver::verifySolution(uint128_t& solution) {
-	if ((solution.lo & 1) == 0) {
+	if ((solution.lo & 1) == 0)
 		return false;
-	}
 	uint64_t diff = 0;
 	for (int i = 0; i < 64; ++i) {
-		if ((solution.lo & (1ULL << i)) != 0) {
+		if ((solution.lo & (1ULL << i)) != 0)
 			diff += numbers[i];
-		}
-		else {
+		else
 			diff -= numbers[i];
-		}
-		if ((solution.hi & (1ULL << i)) != 0) {
+		if ((solution.hi & (1ULL << i)) != 0)
 			diff += numbers[i + 64];
-		}
-		else {
+		else
 			diff -= numbers[i + 64];
-		}
 	}
-	return (diff + 1) <= 2;
+	return (diff + 1) <= 2; //-1, 0, 1
+}
+
+//next number with the same number of set bits
+//returns ~0 (all bits set) at the end of the sequence
+uint64_t nextBitCombination(uint64_t x) {
+	if (x == 0)
+		return ~0;
+	uint64_t lo = x & (0 - x);
+	uint64_t lz = (x + lo) & ~x;
+	x |= lz;
+	x &= ~(lz - 1);
+	x |= (lz / lo / 2) - 1;
+	return x;
 }
 
 int NppSolver::solve(byte * input, size_t inputSize, uint128_t * solutions, size_t maxSolutions, size_t maxLeaves, bool fullProbe) {
@@ -120,8 +128,10 @@ int NppSolver::solve(byte * input, size_t inputSize, uint128_t * solutions, size
 
 	bitstack_t treePath = 0;
 	int solutionsCount = 0;
+	int additionCount = 0;
+	size_t leavesCount = 0;
 
-	while (treePath < maxLeaves && solutionsCount < maxSolutions) {
+	while (leavesCount < maxLeaves && solutionsCount < maxSolutions) {
 		resetWorkingSet();
 		uint64_t diff = getDifference(treePath);
 		if (diff == 0 || diff == 1)	{
@@ -136,7 +146,12 @@ int NppSolver::solve(byte * input, size_t inputSize, uint128_t * solutions, size
 			if (!fullProbe)
 				break;
 		}
-		treePath++;
+		leavesCount++;
+		treePath = nextBitCombination(treePath);
+		if (treePath == ~0) {
+			additionCount++;
+			treePath = (1ULL << additionCount) - 1;
+		}
 	}
 
 	return solutionsCount;

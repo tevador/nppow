@@ -42,10 +42,10 @@ It can be argued that NPPoW can result in a more egalitarian ASIC development th
 
 Compile the code and run as:
 ```
-nppow noncesCount [maxLeaves(16)] [fullProbe(1)] [startingNonce]
+nppow noncesCount [maxLeaves(65)] [fullProbe(1)] [startingNonce]
 ```
-* **noncesCount** - The number of nonces to be tested. It is a required parameter (100000 is a good number).
-- **maxLeaves** - The number of leaves of the binary tree to be probed for each nonce. When set to 1, mining is reduced to the KK algorithm (i.e. only the subtraction branches are taken). Default is 16.
+* **noncesCount** - The number of nonces to be tested. It is a required parameter (50000 is a good number when using the default parameters).
+- **maxLeaves** - The number of leaves of the binary tree to be probed for each nonce. When set to 1, mining is reduced to the KK algorithm (i.e. only the subtraction branches are taken). Default is 65.
 * **fullProbe** - If set to 0, maximum of one solution per nonce will be found. Default value is 1, i.e. the probing continues until *maxLeaves* are visited.
 * **startingNonce** - the starting nonce. Default is a pseudorandom value.
 

@@ -71,12 +71,12 @@ int main(int argc, char** argv) {
 	constexpr int blockTemplateBaseSize = 76;
 
 	uint32_t noncesCount;
-	size_t maxLeaves = 16;
+	size_t maxLeaves = 65;
 	uint32_t startingNonce = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 	bool fullProbe = true;
 
 	if (argc < 2) {
-		std::cout << "Usage: " << std::endl << argv[0] << " noncesCount [maxLeaves(16)] [fullProbe(1)] [startingNonce]" << std::endl;
+		std::cout << "Usage: " << std::endl << argv[0] << " noncesCount [maxLeaves(" << maxLeaves << ")] [fullProbe(" << fullProbe << ")] [startingNonce]" << std::endl;
 		return 0;
 	}
 
