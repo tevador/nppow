@@ -70,7 +70,7 @@ uint64_t NppSolver::getDifference(bitstack_t treePath) {
 	return diff;
 }
 
-bool NppSolver::verifySolution(uint128_t& solution) {
+bool NppSolver::verifySolution(NppSolution& solution) {
 	if ((solution.lo & 1) == 0)
 		return false;
 	uint64_t diff = 0;
@@ -100,7 +100,7 @@ uint64_t nextBitCombination(uint64_t x) {
 	return x;
 }
 
-int NppSolver::solve(byte * input, size_t inputSize, uint128_t * solutions, size_t maxSolutions, size_t maxLeaves, bool fullProbe) {
+int NppSolver::solve(byte * input, size_t inputSize, NppSolution * solutions, size_t maxSolutions, size_t maxLeaves, bool fullProbe) {
 	if (inputSize < N * B / 8) {
 		throw std::runtime_error("Invalid input size");
 	}
@@ -135,7 +135,7 @@ int NppSolver::solve(byte * input, size_t inputSize, uint128_t * solutions, size
 		resetWorkingSet();
 		uint64_t diff = getDifference(treePath);
 		if (diff == 0 || diff == 1)	{
-			uint128_t solution;
+			NppSolution solution;
 			solution.fromTree(workingSet[0]);
 			if ((solution.lo & 1) == 0)	{
 				solution.lo = ~solution.lo;
@@ -157,7 +157,7 @@ int NppSolver::solve(byte * input, size_t inputSize, uint128_t * solutions, size
 	return solutionsCount;
 }
 
-void uint128_t::addNode(NppNode* n, bool first) {
+void NppSolution::addNode(NppNode* n, bool first) {
 	if (n->isLeaf()) {
 		if (first) {
 			if (n->getIndex() < 64)	{
@@ -180,7 +180,7 @@ void uint128_t::addNode(NppNode* n, bool first) {
 	}
 }
 
-void uint128_t::fromTree(NppNode * root) {
+void NppSolution::fromTree(NppNode * root) {
 	hi = lo = UINT64_C(0);
 	addNode(root, true);
 }

@@ -22,6 +22,7 @@ along with nppow.  If not, see<http://www.gnu.org/licenses/>.
 #include <iostream>
 #include <chrono>
 #include <sstream>
+#include "uint256_t/uint256_t.h"
 
                                                                                                          /*NONCE*/
 byte blockTemplateHex[] = "0707f7a4f0d605b303260816ba3f10902e1a145ac5fad3aa3af6ea44c11869dc4f853f002b2eea0000000077b206"
@@ -109,9 +110,9 @@ int main(int argc, char** argv) {
 	hex2bin(blockTemplateHex, sizeof(blockTemplateHex), blockTemplate);
 
 	uint32_t* noncePtr = (uint32_t*)(blockTemplate + nonceOffset);
-	uint128_t* nppSolutionPtr = (uint128_t*)(blockTemplate + blockTemplateBaseSize);
+	NppSolution* nppSolutionPtr = (NppSolution*)(blockTemplate + blockTemplateBaseSize);
 
-	uint128_t solutions[10];
+	NppSolution solutions[10];
 	byte numbersBuffer[B * N / 8];
 	byte powHash[256 / 8];
 	int totalSolutions = 0;
@@ -122,7 +123,7 @@ int main(int argc, char** argv) {
 	for (uint32_t nonce = startingNonce; nonce < startingNonce + noncesCount; ++nonce) {
 		*noncePtr = nonce;
 		shake256(numbersBuffer, sizeof(numbersBuffer), blockTemplate, blockTemplateBaseSize);
-		int solutionsCount = solver.solve(numbersBuffer, sizeof(numbersBuffer), solutions, sizeof(solutions) / sizeof(uint128_t), maxLeaves, fullProbe);
+		int solutionsCount = solver.solve(numbersBuffer, sizeof(numbersBuffer), solutions, sizeof(solutions) / sizeof(NppSolution), maxLeaves, fullProbe);
 		for (int sol = 0; sol < solutionsCount; ++sol) {
 			auto solution = solutions[sol];
 			*nppSolutionPtr = solution;
@@ -131,7 +132,8 @@ int main(int argc, char** argv) {
 			outputHex(std::cout, (byte*)&solution, sizeof(solution));
 			//std::cout << ", PoW: ";
 			//outputHex(std::cout, powHash, sizeof(powHash));
-			std::cout << ", Valid = " << solver.verifySolution(solution) << std::endl;
+			std::cout << ", Valid = " << solver.verifySolution(solution);
+			std::cout << ", Difficulty = " << (uint256_max / *(uint256_t*)powHash) << std::endl;
 		}
 		totalSolutions += solutionsCount;
 	}

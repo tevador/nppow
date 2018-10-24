@@ -122,11 +122,22 @@
   <ItemGroup>
     <ClInclude Include="keccak-tiny\keccak-tiny.h" />
     <ClInclude Include="NppSolver.h" />
+    <ClInclude Include="uint256_t\uint128_t.h" />
+    <ClInclude Include="uint256_t\uint256_t.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="demo.cpp" />
     <ClCompile Include="keccak-tiny\keccak-tiny.c" />
     <ClCompile Include="NppSolver.cpp" />
+    <ClCompile Include="uint256_t\uint128_t.cpp" />
+    <ClCompile Include="uint256_t\uint256_t.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="uint256_t\uint128_t.build" />
+    <None Include="uint256_t\uint128_t.include" />
+    <None Include="uint256_t\uint256_t.build" />
+    <None Include="uint256_t\uint256_t.include" />
+    <None Include="uint256_t\uint256_t_config.include" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

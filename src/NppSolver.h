@@ -36,7 +36,7 @@ enum TreeOperation : bool {
 
 class NppNode;
 
-class uint128_t {
+class NppSolution {
 private:
 	void addNode(NppNode* n, bool first);
 public:
@@ -96,6 +96,6 @@ public:
 		nodes.reserve(2 * N);
 		workingSet.reserve(N);
 	}
-	int solve(byte* input, size_t inputSize, uint128_t* solutions, size_t maxSolutions, size_t maxNodes, bool fullProbe);
-	bool verifySolution(uint128_t& solution);
+	int solve(byte* input, size_t inputSize, NppSolution* solutions, size_t maxSolutions, size_t maxNodes, bool fullProbe);
+	bool verifySolution(NppSolution& solution);
 };

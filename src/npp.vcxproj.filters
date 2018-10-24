@@ -21,6 +21,12 @@
     <ClInclude Include="NppSolver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="uint256_t\uint128_t.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="uint256_t\uint256_t.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="keccak-tiny\keccak-tiny.c">
@@ -32,5 +38,28 @@
     <ClCompile Include="NppSolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="uint256_t\uint128_t.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uint256_t\uint256_t.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="uint256_t\uint128_t.build">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="uint256_t\uint128_t.include">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="uint256_t\uint256_t.build">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="uint256_t\uint256_t.include">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="uint256_t\uint256_t_config.include">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
